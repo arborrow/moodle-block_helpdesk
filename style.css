@@ -1,0 +1,28 @@
+div.ticketupdates {
+  width: 49%;
+  float: right;
+}
+div.ticketinfo {
+  width: 49%;
+  float: left;
+}
+div#ticketlistoptions {
+    display: block;
+    width: 95%;
+    height: 13.5em;
+}
+div.left2div {
+    width: 49%;
+    float: left;
+}
+div.right2div {
+    width: 49%;
+    float: right;
+}
+li {
+    min-width: 1px;
+}
+table {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
