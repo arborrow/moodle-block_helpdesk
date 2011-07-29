@@ -137,10 +137,11 @@ function helpdesk_is_capable($capability=null, $require=false, $user=null) {
  * @return mixed
  */
 function helpdesk_get_user($id) {
+    global $DB;
     if (empty($id)) {
         error(get_string('missingidparam', 'block_helpdesk'));
     }
-    return get_record('user', 'id', $id);
+    return $DB->get_record('user', array('id'=>$id));
 }
 
 /**
@@ -155,7 +156,7 @@ function helpdesk_get_session_var($varname) {
     global $SESSION;
     if (isset($SESSION->block_helpdesk)) {
         return isset($SESSION->block_helpdesk->$varname) ?
-	       $SESSION->block_helpdesk->$varname : false; 
+	       $SESSION->block_helpdesk->$varname : false;
     }
     $SESSION->block_helpdesk = new stdClass;
     return null;
@@ -186,10 +187,14 @@ function helpdesk_set_session_var($varname, $value) {
  * @return string
  */
 function helpdesk_simple_helpbutton($title, $name, $return=true) {
-    global $CFG;
-    $result = helpbutton($name, $title, 'block_helpdesk', true, false, '', $return);
-    return $result;
-
+    global $OUTPUT;
+    $result = $OUTPUT->help_icon($name, 'block_helpdesk', false);
+    if ($return) {
+        return $result;
+    }
+    else {
+        echo $result;
+    }
 }
 
 /**
@@ -198,17 +203,33 @@ function helpdesk_simple_helpbutton($title, $name, $return=true) {
  * Besides, the header is going to be very similar from one page to another with
  * the exception of navigation.
  *
- * @param object        $nav will be a navigation build by build_navigation().
+ * @param array         $nav array of URL-title pairs
+ * @param string        $title is the page title
  * @return null
  */
-function helpdesk_print_header($nav, $title=null) {
-    global $CFG, $COURSE;
-    $helpdeskstr = get_string('helpdesk', 'block_helpdesk');
-    if (empty($title)) {
-	$title = $helpdeskstr;
+function helpdesk_print_header($nav, $title) {
+    global $PAGE, $OUTPUT;
+
+//    $helpdeskstr = get_string('helpdesk', 'block_helpdesk');
+//    if (empty($title)) {
+//	$title = $helpdeskstr;
+//    }
+//    $meta = "<meta http-equiv=\"x-ua-compatible\" content=\"IE=8\" />\n
+//	     <link rel=\"stylesheet\" type=\"text/css\" href=\"$CFG->wwwroot/blocks/helpdesk/style.css\" />\n";
+//    print_header($title, $helpdeskstr, $nav, '', $meta);
+
+    // Set up the page
+    $PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
+    $PAGE->set_heading($title);
+    $PAGE->set_title($title);
+    $PAGE->set_pagelayout('standard');
+
+    // Set up navigation
+    $parent = $PAGE->navigation;
+    foreach($nav as $navitem) {
+        $parent = $parent->add($navitem['name'], $navitem['link']);
     }
-    $meta = "<meta http-equiv=\"x-ua-compatible\" content=\"IE=8\" />\n
-	     <link rel=\"stylesheet\" type=\"text/css\" href=\"$CFG->wwwroot/blocks/helpdesk/style.css\" />\n";
-    print_header($title, $helpdeskstr, $nav, '', $meta);
+    
+    // Start the page
+    echo $OUTPUT->header();
 }
-?>

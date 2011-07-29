@@ -37,17 +37,13 @@ require_once($CFG->dirroot . '/blocks/helpdesk/lib.php');
 require_login(0, false);
 
 // User should be logged in, no guests.
-$nav = array (
-    array ('name' => get_string('helpdesk', 'block_helpdesk')),
-    array ('name' => get_string('newticket', 'block_helpdesk'))
-    );
-
+ 
 // We may have some special tags included in GET.
 $tags = optional_param('tags', null, PARAM_TAGLIST);
 $tagslist = array();
 if (!empty($tags)) {
-    $tags = explode(',', $tags);
-    foreach($tags as $tag) {
+    $tagssplit = explode(',', $tags);
+    foreach($tagssplit as $tag) {
         if (!($rval = optional_param($tag, null, PARAM_TEXT))) {
             notify(get_string('missingnewtickettag', 'block_helpdesk') . ": $tag");
         }
@@ -58,9 +54,21 @@ if (!empty($tags)) {
 // Require a minimum of asker capability on the current user.
 helpdesk_is_capable(HELPDESK_CAP_ASK, true);
 
-$title = get_string('helpdesknewticket', 'block_helpdesk');
-helpdesk_print_header(build_navigation($nav), $title);
-print_heading(get_string('helpdesk', 'block_helpdesk'));
+$url = new moodle_url("/blocks/helpdesk/new.php");
+if ($tags) {
+    $url->param('tags', $tags);
+}
+$PAGE->set_url($url);
+$nav = array (
+    array ('name' => get_string('helpdesk', 'block_helpdesk'), 'link'=>null),
+    array ('name' => get_string('newticket', 'block_helpdesk'), 'link'=>$url)
+    );
+
+
+$title = get_string('newticket', 'block_helpdesk');
+//helpdesk_print_header(build_navigation($nav), $title);
+//print_heading(get_string('helpdesk', 'block_helpdesk'));
+helpdesk_print_header($nav, $title);
 
 // Meat and potatoes of the new ticket.
 // Get plugin helpdesk.
@@ -76,7 +84,8 @@ if (!empty($taglist)) {
 // If the form is submitted (or not) we gotta do stuff.
 if (!$form->is_submitted() or !($data = $form->get_data())) {
     $form->display();
-    print_footer();
+//    print_footer();
+    echo $OUTPUT->footer();
     exit;
 }
 
@@ -115,6 +124,4 @@ if (!empty($data->tags)) {
 $url = new moodle_url("$CFG->wwwroot/blocks/helpdesk/view.php");
 $url->param('id', $id);
 $url = $url->out();
-
 redirect($url, get_string('newticketmsg', 'block_helpdesk'));
-?>

@@ -42,20 +42,22 @@ $page       = optional_param('page', null, PARAM_INT);
 $count      = optional_param('count', null, PARAM_INT);
 
 $url = new moodle_url("$CFG->wwwroot/blocks/helpdesk/view.php");
+$PAGE->set_url($url);
 $nav = array(array (
     'name' => get_string('helpdesk', 'block_helpdesk'),
     'link' => $url->out()
 ));
-$heading = get_string('helpdesk', 'block_helpdesk');
+//$heading = get_string('helpdesk', 'block_helpdesk');
 if (isset($id)) {
-    $nav[] = array('name' => get_string('ticketviewer', 'block_helpdesk'));
-    $heading = get_string('ticketviewer', 'block_helpdesk');
+    $nav[] = array('name' => get_string('ticketviewer', 'block_helpdesk'), 'link'=>null);
+//    $heading = get_string('ticketviewer', 'block_helpdesk');
 }
 
 $title = get_string('helpdeskticketviewer', 'block_helpdesk');
 
-helpdesk_print_header(build_navigation($nav), $title);
-print_heading($heading);
+//helpdesk_print_header(build_navigation($nav), $title);
+//print_heading($heading);
+helpdesk_print_header($nav, $title);
 
 // Let's construct our helpdesk.
 $hd = helpdesk::get_helpdesk();
@@ -197,5 +199,4 @@ if (!empty($id)) {
     }
 }
 
-print_footer();
-?>
+echo $OUTPUT->footer();

@@ -32,7 +32,7 @@ if (!defined('HELPDESK_CAP_ANSWER')) {
     define('HELPDESK_CAP_ANSWER', 'block/helpdesk:answer');
 }
 
-$block_helpdesk_capabilities = array (
+$capabilities = array (
     HELPDESK_CAP_ASK => array (
         'riskbitmask'   => RISK_SPAM,
         'captype'       => 'write',
